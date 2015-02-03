@@ -40,18 +40,15 @@ class Post < ActiveRecord::Base
   
   ########## BOOKMARK ##########
   #check if a user has already bookmarked a post
-  def already_bookmarked_by_user?(the_user)
-    post_bookmark_array(the_user).present?
+  def bookmarked_by_user?(user)
+    bookmark_object(user).present?
   end
   
   #return the id of the bookmark after it's confirmed that a user has already bookmarked on a post
   def bookmark_object(the_user)
-    post_bookmark_array(the_user).first.id
+    the_user.bookmarked_posts.find_by_post_id(id)
   end
   
-  def post_bookmark_array(the_user)
-    the_user.bookmarked_posts.where(["user_id = ? and post_id = ?", the_user.id, self.id])
-  end
   ##########  END BOOKMARK ##########
   
 end
