@@ -13,9 +13,8 @@ class PostsController < ApplicationController
   end
   
   def create
-    @post = Post.create(post_params.merge(:creator => current_user))
-    if @post.save
-      generate_url_attributes_preview      
+    if post.save
+      add_post_link_thumbnailer_job_to_queue      
       flash[:notice] = "You successfully created your post!"
       redirect_to posts_path
     else
@@ -60,9 +59,12 @@ class PostsController < ApplicationController
     access_denied unless logged_in? and (current_user == @post.creator || current_user.admin?)
   end
   
-  def generate_url_attributes_preview
+  def add_post_link_thumbnailer_job_to_queue
     LinkThumbnailerService.new(@post).perform
   end
   
+  def post
+    @post ||= Post.create(post_params.merge(:creator => current_user))
+  end
   
 end
